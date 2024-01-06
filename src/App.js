@@ -1,64 +1,89 @@
-import { click } from '@testing-library/user-event/dist/click';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
   const [strawsProduced, setStrawsProduced] = useState(0);
   const [strawsInInventory, setStrawsInInventory] = useState(0);
   const [money, setMoney] = useState(0);
-  const [strawPrice, setStrawPrice] = useState(0.10); // Starting price of one straw
-  const [sellIntervalId, setSellIntervalId] = useState(null);
+  const [strawPrice, setStrawPrice] = useState(0.10);
+  const [isSelling, setIsSelling] = useState(false);
+  const [demand, setDemand] = useState(1.0); // Initial demand
+  const [maxDemand, setMaxDemand] = useState(2000); // Maximum demand at price 0
+  const [priceCoefficient, setPriceCoefficient] = useState(10000.0); // Coefficient affecting demand based on price
+  const [timeCoefficient, setTimeCoefficient] = useState(1000000); // Coefficient for calculating selling interval
+  const [sellingInterval, setSellingInterval] = useState(1000); // Time between sales
 
   const produceStraw = () => {
     setStrawsProduced(prev => prev + 1);
     setStrawsInInventory(prev => prev + 1);
+    setIsSelling(true);
   };
 
-
-  const updateStrawPrice = (newPrice) => {
-    setStrawPrice(newPrice);
+  const sellStraw = () => {
+    setStrawsInInventory(prevStraws => {
+      if (prevStraws > 0) {
+        setMoney(prevMoney => prevMoney + strawPrice);
+        return prevStraws - 1;
+      } else {
+        setIsSelling(false);
+        return prevStraws;
+      }
+    });
   };
 
-  const calculateDemand = (price) => {
-    const maxDemand = 100; // Maximum demand at the lowest price
-    const demand = maxDemand / price; // Simple inverse relationship
-    return Math.max(0, demand); // Ensure demand is not negative
-  };
-
-  const startSelling = () => {
-    if (sellIntervalId) return; // Avoid multiple intervals
-  
-    const id = setInterval(() => {
-      setStrawsInInventory(prevInventory => {
-        if (prevInventory > 0) {
-          // If there are straws in inventory, sell one
-          setMoney(prevMoney => prevMoney + strawPrice);
-          return prevInventory - 1; // Reduce inventory by one
-        } else {
-          // If no straws left, stop the selling process
-          clearInterval(id);
-          setSellIntervalId(null);
-          return prevInventory; // Return the current inventory (which is 0)
-        }
-      });
-    }, calculateInterval());
-  
-    setSellIntervalId(id);
+  const increasePrice = () => {
+    setStrawPrice(prevPrice => {
+      const newPrice = prevPrice + 0.01;
+      updateDemand(newPrice); // Update demand with new price
+      return newPrice;
+    });
   };
   
-  
-  
-  const calculateInterval = () => {
-    const maxInterval = 100000; // Interval in milliseconds at lowest demand
-    const demand = calculateDemand(strawPrice);
-    return Math.max(1000, maxInterval / demand); // Adjust this formula as needed
+  const decreasePrice = () => {
+    setStrawPrice(prevPrice => {
+      const newPrice = Math.max(0.01, prevPrice - 0.01); // Ensure price doesn't go below $0.01
+      updateDemand(newPrice); // Update demand with new price
+      return newPrice;
+    });
   };
   
 
-  const stopSelling = () => {
-    clearInterval(sellIntervalId);
-    setSellIntervalId(null);
+  const updateDemand = (currentPrice = strawPrice) => {
+    const newDemand = maxDemand - priceCoefficient * currentPrice;
+    setDemand(newDemand > 0 ? newDemand : 0);
   };
   
+
+  const updateSellingInterval = () => {
+    if (demand === 0) {
+      setIsSelling(false);
+      setSellingInterval(null);
+    } else {
+      const newInterval = timeCoefficient / demand;
+      setSellingInterval(newInterval);
+    }
+  };
+
+  // Update demand whenever maxDemand, priceCoefficient, or strawPrice changes
+  useEffect(() => {
+    updateDemand();
+  }, [maxDemand, priceCoefficient, strawPrice]);
+
+  // Update sellingInterval whenever demand changes
+  useEffect(() => {
+    updateSellingInterval();
+  }, [demand]);
+
+  useEffect(() => {
+    let intervalId;
+  
+    if (isSelling) {
+      intervalId = setInterval(() => {
+        sellStraw();
+      }, sellingInterval);
+    }
+  
+    return () => clearInterval(intervalId);
+  }, [isSelling, sellingInterval]);
   
 
   return (
@@ -67,19 +92,22 @@ function App() {
       <p>Straws Produced: {strawsProduced}</p>
       <p>Straws in Inventory: {strawsInInventory}</p>
       <p>Money: ${money.toFixed(2)}</p>
-      <p>Current Straw Price: ${strawPrice.toFixed(2)}</p>
-      <input
-        type="number"
-        value={strawPrice}
-        onChange={(e) => updateStrawPrice(parseFloat(e.target.value))}
-        min="0.01"
-        step="0.01"
-      />
+      <p>Straw Price: ${strawPrice.toFixed(2)}</p>
       <button onClick={produceStraw}>Produce Straw</button>
-      <button onClick={startSelling}>Start Selling</button>
-      <button onClick={stopSelling}>Stop Selling</button>
+      <button onClick={increasePrice}>Increase Price</button>
+      <button onClick={decreasePrice}>Decrease Price</button>
+
+      <div className="game-variables">
+        <h2>Game Variables</h2>
+        <p>Demand: {demand.toFixed(2)}</p>
+        <p>Max Demand: {maxDemand}</p>
+        <p>Time Coefficient: {timeCoefficient}</p>
+        <p>Price Coefficient: {priceCoefficient.toFixed(2)}</p>
+        <p>Selling Interval: {sellingInterval ? sellingInterval.toFixed(2) + ' ms' : 'Not Selling'}</p>
+      </div>
     </div>
-  );  
+  );    
 }
 
 export default App;
+
