@@ -6,22 +6,59 @@ function App() {
   const [strawsInInventory, setStrawsInInventory] = useState(0);
   const [money, setMoney] = useState(0);
   const [strawPrice, setStrawPrice] = useState(0.10); // Starting price of one straw
-
+  const [sellIntervalId, setSellIntervalId] = useState(null);
 
   const produceStraw = () => {
     setStrawsProduced(prev => prev + 1);
     setStrawsInInventory(prev => prev + 1);
   };
 
-  const sellStraws = () => {
-    const sellPrice = 0.10; // The price of one straw, for example
-    setMoney(prevMoney => prevMoney + sellPrice * strawsInInventory);
-    setStrawsInInventory(0); // All straws in inventory are sold
-  };
 
   const updateStrawPrice = (newPrice) => {
     setStrawPrice(newPrice);
   };
+
+  const calculateDemand = (price) => {
+    const maxDemand = 100; // Maximum demand at the lowest price
+    const demand = maxDemand / price; // Simple inverse relationship
+    return Math.max(0, demand); // Ensure demand is not negative
+  };
+
+  const startSelling = () => {
+    if (sellIntervalId) return; // Avoid multiple intervals
+  
+    const id = setInterval(() => {
+      setStrawsInInventory(prevInventory => {
+        if (prevInventory > 0) {
+          // If there are straws in inventory, sell one
+          setMoney(prevMoney => prevMoney + strawPrice);
+          return prevInventory - 1; // Reduce inventory by one
+        } else {
+          // If no straws left, stop the selling process
+          clearInterval(id);
+          setSellIntervalId(null);
+          return prevInventory; // Return the current inventory (which is 0)
+        }
+      });
+    }, calculateInterval());
+  
+    setSellIntervalId(id);
+  };
+  
+  
+  
+  const calculateInterval = () => {
+    const maxInterval = 100000; // Interval in milliseconds at lowest demand
+    const demand = calculateDemand(strawPrice);
+    return Math.max(1000, maxInterval / demand); // Adjust this formula as needed
+  };
+  
+
+  const stopSelling = () => {
+    clearInterval(sellIntervalId);
+    setSellIntervalId(null);
+  };
+  
   
 
   return (
@@ -39,7 +76,8 @@ function App() {
         step="0.01"
       />
       <button onClick={produceStraw}>Produce Straw</button>
-      <button onClick={sellStraws}>Sell All Straws</button>
+      <button onClick={startSelling}>Start Selling</button>
+      <button onClick={stopSelling}>Stop Selling</button>
     </div>
   );  
 }
