@@ -4,30 +4,72 @@ function App() {
   const [strawsProduced, setStrawsProduced] = useState(0);
   const [strawsInInventory, setStrawsInInventory] = useState(0);
   const [money, setMoney] = useState(0);
-  const [strawPrice, setStrawPrice] = useState(0.10);
   const [isSelling, setIsSelling] = useState(false);
-  const [demand, setDemand] = useState(1.0); // Initial demand
-  const [maxDemand, setMaxDemand] = useState(2000); // Maximum demand at price 0
-  const [priceCoefficient, setPriceCoefficient] = useState(10000.0); // Coefficient affecting demand based on price
-  const [timeCoefficient, setTimeCoefficient] = useState(1000000); // Coefficient for calculating selling interval
-  const [sellingInterval, setSellingInterval] = useState(1000); // Time between sales
+  const [strawPrice, setStrawPrice] = useState(0.10); // Initial straw price
+  const [marketingLevels, setMarketingLevels] = useState(1); // M in the formula
+  const [bonuses, setBonuses] = useState(1); // Bonus multiplier
+  const [demand, setDemand] = useState(0); // Demand for straws
+  const [strawsSoldPerSecond, setStrawsSoldPerSecond] = useState(0); // Straws sold per second
+  const [sellingInterval, setSellingInterval] = useState(1000); // Inverse of straws sold per second, in milliseconds
+  const [paperSquares, setPaperSquares] = useState(500);
+  const [squaresPerPurchase, setSquaresPerPurchase] = useState(500);
+  const [costPerSquarePurchase, setCostPerSquarePurchase] = useState(20);
+  const [sellIntervalId, setSellIntervalId] = useState(null);
+
+
 
   const produceStraw = () => {
-    setStrawsProduced(prev => prev + 1);
-    setStrawsInInventory(prev => prev + 1);
-    setIsSelling(true);
+    if (paperSquares > 0) {
+      setStrawsProduced(prev => prev + 1);
+      setStrawsInInventory(prev => prev + 1);
+      setPaperSquares(prev => prev - 1);
+      setIsSelling(true);
+    }
   };
+
+  // const sellStraw = () => {
+  //   console.log("Selling a straw");
+  //   setStrawsInInventory(prevStraws => {
+  //     if (prevStraws > 0) {
+  //       setMoney(prevMoney => {
+  //         console.log("Adding money:", prevMoney + strawPrice); // Debugging log
+  //         return prevMoney + strawPrice;
+  //       });
+  //       return prevStraws - 1;
+  //     } else {
+  //       setIsSelling(false);
+  //       return prevStraws;
+  //     }
+  //   });    
+  // };
+
+  // const sellStraw = () => {
+  //   console.log("Attempting to sell a straw"); // Log before condition check
+  //   if (strawsInInventory > 0) {
+  //     console.log("Selling a straw"); // Log in the condition
+  //     setStrawsInInventory(prev => prev - 1);
+  //     setMoney(prev => prev + strawPrice);
+  //   } else {
+  //     setIsSelling(false);
+  //   }
+  // };
 
   const sellStraw = () => {
     setStrawsInInventory(prevStraws => {
       if (prevStraws > 0) {
+        // Update money within the same state update operation
         setMoney(prevMoney => prevMoney + strawPrice);
-        return prevStraws - 1;
+        return prevStraws - 1; // Decrease straws in inventory
       } else {
-        setIsSelling(false);
-        return prevStraws;
+        // Optionally, you can move setIsSelling(false) outside, after this state update
+        return prevStraws; // Do nothing if no straws left
       }
     });
+  
+    // Optional: Check if selling should stop after state update
+    if (strawsInInventory <= 1) {
+      setIsSelling(false);
+    }
   };
 
   const increasePrice = () => {
@@ -44,45 +86,63 @@ function App() {
       updateDemand(newPrice); // Update demand with new price
       return newPrice;
     });
-  };
-  
+  };  
 
-  const updateDemand = (currentPrice = strawPrice) => {
-    const newDemand = maxDemand - priceCoefficient * currentPrice;
-    setDemand(newDemand > 0 ? newDemand : 0);
-  };
-  
-
-  const updateSellingInterval = () => {
-    if (demand === 0) {
-      setIsSelling(false);
-      setSellingInterval(null);
+  const purchaseSquares = () => {
+    if (money >= costPerSquarePurchase) {
+      setMoney(prevMoney => prevMoney - costPerSquarePurchase);
+      setPaperSquares(prevSquares => prevSquares + squaresPerPurchase);
     } else {
-      const newInterval = timeCoefficient / demand;
-      setSellingInterval(newInterval);
+      console.log("not enough money :(")
     }
   };
+
+  const updateDemand = () => {
+    const newDemand = Math.pow(1.1, marketingLevels) * bonuses * (0.8 / strawPrice);
+    setDemand(newDemand);
+    updateStrawsSoldPerSecond(newDemand);
+  };
+  
+  const updateStrawsSoldPerSecond = (currentDemand) => {
+    const newStrawsSoldPerSecond = Math.min(1, currentDemand / 100) * 1 * Math.pow(currentDemand, 1.15);
+    setStrawsSoldPerSecond(newStrawsSoldPerSecond);
+    const newInterval = 1 / newStrawsSoldPerSecond * 1000;
+    console.log("New selling interval:", newInterval); // Debugging log
+    setSellingInterval(newInterval);
+  };
+    
 
   // Update demand whenever maxDemand, priceCoefficient, or strawPrice changes
   useEffect(() => {
     updateDemand();
-  }, [maxDemand, priceCoefficient, strawPrice]);
-
-  // Update sellingInterval whenever demand changes
-  useEffect(() => {
-    updateSellingInterval();
-  }, [demand]);
-
-  useEffect(() => {
-    let intervalId;
+  }, [strawPrice, marketingLevels, bonuses]);
   
-    if (isSelling) {
-      intervalId = setInterval(() => {
-        sellStraw();
-      }, sellingInterval);
+
+  const startSelling = () => {
+    if (sellIntervalId) {
+      clearInterval(sellIntervalId); // Clear existing interval if it exists
     }
   
-    return () => clearInterval(intervalId);
+    const id = setInterval(() => {
+      sellStraw();
+    }, sellingInterval);
+  
+    setSellIntervalId(id); // Save the new interval ID
+  };
+  
+  useEffect(() => {
+    if (isSelling) {
+      startSelling();
+    } else {
+      if (sellIntervalId) {
+        clearInterval(sellIntervalId);
+        setSellIntervalId(null);
+      }
+    }
+  
+    return () => {
+      if (sellIntervalId) clearInterval(sellIntervalId);
+    };
   }, [isSelling, sellingInterval]);
   
 
@@ -93,17 +153,20 @@ function App() {
       <p>Straws in Inventory: {strawsInInventory}</p>
       <p>Money: ${money.toFixed(2)}</p>
       <p>Straw Price: ${strawPrice.toFixed(2)}</p>
+      <p>Paper Squares: {paperSquares}</p>
+      <p>Paper Square Price: ${costPerSquarePurchase} for {squaresPerPurchase} squares</p>
       <button onClick={produceStraw}>Produce Straw</button>
       <button onClick={increasePrice}>Increase Price</button>
       <button onClick={decreasePrice}>Decrease Price</button>
+      <button onClick={purchaseSquares}>Purchase More Squares</button>
 
-      <div className="game-variables">
-        <h2>Game Variables</h2>
+      <div className="game-stats">
+        <h2>Game Stats</h2>
         <p>Demand: {demand.toFixed(2)}</p>
-        <p>Max Demand: {maxDemand}</p>
-        <p>Time Coefficient: {timeCoefficient}</p>
-        <p>Price Coefficient: {priceCoefficient.toFixed(2)}</p>
-        <p>Selling Interval: {sellingInterval ? sellingInterval.toFixed(2) + ' ms' : 'Not Selling'}</p>
+        <p>Straws Sold Per Second: {strawsSoldPerSecond.toFixed(2)}</p>
+        <p>Selling Interval: {sellingInterval.toFixed(2)} ms</p>
+        <p>Current Bonuses: {bonuses}</p>
+        <p>Current Marketing Levvel: {marketingLevels}</p>
       </div>
     </div>
   );    
