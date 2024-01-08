@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Workforce from './components/Workforce';
+
 
 function App() {
   const [strawsProduced, setStrawsProduced] = useState(0);
   const [strawsInInventory, setStrawsInInventory] = useState(0);
-  const [money, setMoney] = useState(0);
+  const [money, setMoney] = useState(200);
   const [isSelling, setIsSelling] = useState(false);
   const [strawPrice, setStrawPrice] = useState(0.10); // Initial straw price
   const [marketingLevels, setMarketingLevels] = useState(1); // M in the formula
@@ -15,15 +17,13 @@ function App() {
   const [squaresPerPurchase, setSquaresPerPurchase] = useState(500);
   const [costPerSquarePurchase, setCostPerSquarePurchase] = useState(20);
   const [sellIntervalId, setSellIntervalId] = useState(null);
+  const [autoStrawsPerSecond, setAutoStrawsPerSecond] = useState(0)
 
   const inventoryRef = useRef(strawsInInventory);
 
   useEffect(() => {
     inventoryRef.current = strawsInInventory;
   }, [strawsInInventory]);
-
-
-
 
   const produceStraw = () => {
     if (paperSquares > 0) {
@@ -34,7 +34,6 @@ function App() {
     }
   };
 
-  
   const increasePrice = () => {
     setStrawPrice(prevPrice => {
       const newPrice = prevPrice + 0.01;
@@ -74,7 +73,6 @@ function App() {
     setSellingInterval(newInterval);
   };
     
-
   // Update demand whenever maxDemand, priceCoefficient, or strawPrice changes
   useEffect(() => {
     updateDemand();
@@ -112,9 +110,30 @@ function App() {
       }
     };
   }, [isSelling, sellingInterval]);
-  
-  
 
+  const updateMoney = (newMoneyValue) => {
+    setMoney(newMoneyValue);
+  };
+  
+  const updateAutoStrawsPerSecond = (newRate) => {
+    setAutoStrawsPerSecond(newRate);
+  };
+  
+  const updateMarketingLevels = (newLevel) => {
+    setMarketingLevels(newLevel);
+  };  
+
+  useEffect(() => {
+    const autoProduceStraws = setInterval(() => {
+      if (autoStrawsPerSecond > 0 && paperSquares > 0) {
+        produceStraw();
+      }
+    }, 1000); // Every second
+  
+    return () => clearInterval(autoProduceStraws);
+  }, [autoStrawsPerSecond, paperSquares]);
+  
+  
   return (
     <div className="App">
       <h1>Strawtopia: The Rise of Paper Power</h1>
@@ -129,6 +148,14 @@ function App() {
       <button onClick={decreasePrice}>Decrease Price</button>
       <button onClick={purchaseSquares}>Purchase More Squares</button>
 
+      <Workforce
+        money={money}
+        updateMoney={updateMoney}
+        autoStrawsPerSecond={autoStrawsPerSecond}
+        updateAutoStrawsPerSecond={updateAutoStrawsPerSecond}
+        updateMarketingLevels={updateMarketingLevels}
+      />
+
       <div className="game-stats">
         <h2>Game Stats</h2>
         <p>Demand: {demand.toFixed(2)}</p>
@@ -136,6 +163,7 @@ function App() {
         <p>Selling Interval: {sellingInterval.toFixed(2)} ms</p>
         <p>Current Bonuses: {bonuses}</p>
         <p>Current Marketing Levvel: {marketingLevels}</p>
+        <p>Straws Auto-Produced per second: {autoStrawsPerSecond}</p>
       </div>
     </div>
   );    
