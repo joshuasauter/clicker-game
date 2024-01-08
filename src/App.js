@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
   const [strawsProduced, setStrawsProduced] = useState(0);
@@ -16,6 +16,13 @@ function App() {
   const [costPerSquarePurchase, setCostPerSquarePurchase] = useState(20);
   const [sellIntervalId, setSellIntervalId] = useState(null);
 
+  const inventoryRef = useRef(strawsInInventory);
+
+  useEffect(() => {
+    inventoryRef.current = strawsInInventory;
+  }, [strawsInInventory]);
+
+
 
 
   const produceStraw = () => {
@@ -27,51 +34,7 @@ function App() {
     }
   };
 
-  // const sellStraw = () => {
-  //   console.log("Selling a straw");
-  //   setStrawsInInventory(prevStraws => {
-  //     if (prevStraws > 0) {
-  //       setMoney(prevMoney => {
-  //         console.log("Adding money:", prevMoney + strawPrice); // Debugging log
-  //         return prevMoney + strawPrice;
-  //       });
-  //       return prevStraws - 1;
-  //     } else {
-  //       setIsSelling(false);
-  //       return prevStraws;
-  //     }
-  //   });    
-  // };
-
-  // const sellStraw = () => {
-  //   console.log("Attempting to sell a straw"); // Log before condition check
-  //   if (strawsInInventory > 0) {
-  //     console.log("Selling a straw"); // Log in the condition
-  //     setStrawsInInventory(prev => prev - 1);
-  //     setMoney(prev => prev + strawPrice);
-  //   } else {
-  //     setIsSelling(false);
-  //   }
-  // };
-
-  const sellStraw = () => {
-    setStrawsInInventory(prevStraws => {
-      if (prevStraws > 0) {
-        // Update money within the same state update operation
-        setMoney(prevMoney => prevMoney + strawPrice);
-        return prevStraws - 1; // Decrease straws in inventory
-      } else {
-        // Optionally, you can move setIsSelling(false) outside, after this state update
-        return prevStraws; // Do nothing if no straws left
-      }
-    });
   
-    // Optional: Check if selling should stop after state update
-    if (strawsInInventory <= 1) {
-      setIsSelling(false);
-    }
-  };
-
   const increasePrice = () => {
     setStrawPrice(prevPrice => {
       const newPrice = prevPrice + 0.01;
@@ -117,33 +80,39 @@ function App() {
     updateDemand();
   }, [strawPrice, marketingLevels, bonuses]);
   
-
+  
   const startSelling = () => {
     if (sellIntervalId) {
-      clearInterval(sellIntervalId); // Clear existing interval if it exists
+      clearInterval(sellIntervalId);
     }
   
     const id = setInterval(() => {
-      sellStraw();
+      if (inventoryRef.current > 0) {
+        setStrawsInInventory(prev => prev - 1);
+        inventoryRef.current -= 1;
+        setMoney(prev => prev + strawPrice);
+      } else {
+        setIsSelling(false);
+        clearInterval(id);
+      }
     }, sellingInterval);
   
-    setSellIntervalId(id); // Save the new interval ID
+    setSellIntervalId(id);
   };
   
   useEffect(() => {
     if (isSelling) {
       startSelling();
-    } else {
+    }
+  
+    return () => {
       if (sellIntervalId) {
         clearInterval(sellIntervalId);
         setSellIntervalId(null);
       }
-    }
-  
-    return () => {
-      if (sellIntervalId) clearInterval(sellIntervalId);
     };
   }, [isSelling, sellingInterval]);
+  
   
 
   return (
@@ -174,3 +143,29 @@ function App() {
 
 export default App;
 
+// const sellStraw = () => {
+  //   console.log("Selling a straw");
+  //   setStrawsInInventory(prevStraws => {
+  //     if (prevStraws > 0) {
+  //       setMoney(prevMoney => {
+  //         console.log("Adding money:", prevMoney + strawPrice); // Debugging log
+  //         return prevMoney + strawPrice;
+  //       });
+  //       return prevStraws - 1;
+  //     } else {
+  //       setIsSelling(false);
+  //       return prevStraws;
+  //     }
+  //   });    
+  // };
+
+  // const sellStraw = () => {
+  //   console.log("Attempting to sell a straw"); // Log before condition check
+  //   if (strawsInInventory > 0) {
+  //     console.log("Selling a straw"); // Log in the condition
+  //     setStrawsInInventory(prev => prev - 1);
+  //     setMoney(prev => prev + strawPrice);
+  //   } else {
+  //     setIsSelling(false);
+  //   }
+  // };
