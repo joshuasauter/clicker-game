@@ -10,33 +10,38 @@ function Workforce(props) {
     if (props.money >= rollerPrice) {
       setRollerCount(currentCount => currentCount + 1);
       props.updateMoney(currentMoney => currentMoney - rollerPrice);
-      props.updateAutoStrawsPerSecond(currentStraws => currentStraws + 1); // Assuming each roller adds 1 straw per second
-      // Implement price increase logic for next purchase, if needed
+      props.updateAutoStrawsPerSecond(currentStraws => currentStraws + 1);
+  
+      // Update roller price based on new count
+      setRollerPrice(1.2 ** (rollerCount + 1) + 10);
     } else {
       console.log("Not enough money to purchase a roller");
     }
   };
-
+  
   const purchaseMarketer = () => {
     if (props.money >= marketerPrice) {
       setMarketerCount(currentCount => currentCount + 1);
       props.updateMoney(currentMoney => currentMoney - marketerPrice);
       props.updateMarketingLevels(currentLevels => currentLevels + 1);
-      // Implement price increase logic for next purchase, if needed
+  
+      // Update marketer price based on new count
+      setMarketerPrice(4 ** (marketerCount + 1) * 100);
     } else {
       console.log("Not enough money to purchase a marketer");
     }
   };
+  
 
   return (
     <div>
       <h2>Workforce</h2>
       <div>
-        <p>Rollers: {rollerCount} (Price: ${rollerPrice})</p>
+        <p>Rollers: {rollerCount} (Price: ${rollerPrice.toFixed(2)})</p>
         <button onClick={purchaseRoller}>Purchase Roller</button>
       </div>
       <div>
-        <p>Marketers: {marketerCount} (Price: ${marketerPrice})</p>
+        <p>Marketers: {marketerCount} (Price: ${marketerPrice.toFixed(2)})</p>
         <button onClick={purchaseMarketer}>Purchase Marketer</button>
       </div>
     </div>

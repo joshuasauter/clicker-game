@@ -128,7 +128,7 @@ function App() {
       if (autoStrawsPerSecond > 0 && paperSquares > 0) {
         produceStraw();
       }
-    }, 1000); // Every second
+    }, (1000 * (1 / Math.max(1, autoStrawsPerSecond)))); // Every second
   
     return () => clearInterval(autoProduceStraws);
   }, [autoStrawsPerSecond, paperSquares]);
