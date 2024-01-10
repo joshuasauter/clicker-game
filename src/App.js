@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Workforce from './components/Workforce';
+import './App.css';
 
 
 function App() {

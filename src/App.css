@@ -37,6 +37,14 @@
   }
 }
 
+body {
+  background-image: url('assets/background.png'); /* Adjust the path as necessary */
+  background-size: cover; /* This makes the image cover the entire background */
+  background-position: center; /* This centers the image in the background */
+  background-repeat: no-repeat; /* This stops the image from repeating */
+}
+
+
 .game-variables {
   margin-top: 20px;
   border-top: 1px solid #ccc;
