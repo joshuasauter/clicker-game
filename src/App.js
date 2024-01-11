@@ -149,15 +149,18 @@ function App() {
       <button onClick={decreasePrice}>Decrease Price</button>
       <button onClick={purchaseSquares}>Purchase More Squares</button>
 
-      <Workforce
-        money={money}
-        updateMoney={updateMoney}
-        autoStrawsPerSecond={autoStrawsPerSecond}
-        updateAutoStrawsPerSecond={updateAutoStrawsPerSecond}
-        updateMarketingLevels={updateMarketingLevels}
-      />
-
-      <div className="game-stats">
+      <div className="window">
+        <div className="window-titlebar">Workforce</div>
+        <Workforce
+          money={money}
+          updateMoney={updateMoney}
+          autoStrawsPerSecond={autoStrawsPerSecond}
+          updateAutoStrawsPerSecond={updateAutoStrawsPerSecond}
+          updateMarketingLevels={updateMarketingLevels}
+        />
+      </div>
+      
+      <div className="game-variables">
         <h2>Game Stats</h2>
         <p>Demand: {demand.toFixed(2)}</p>
         <p>Straws Sold Per Second: {strawsSoldPerSecond.toFixed(2)}</p>
