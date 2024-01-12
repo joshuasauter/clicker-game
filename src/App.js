@@ -137,17 +137,23 @@ function App() {
   
   return (
     <div className="App">
-      <h1>Strawtopia: The Rise of Paper Power</h1>
-      <p>Straws Produced: {strawsProduced}</p>
-      <p>Straws in Inventory: {strawsInInventory}</p>
-      <p>Money: ${money.toFixed(2)}</p>
-      <p>Straw Price: ${strawPrice.toFixed(2)}</p>
-      <p>Paper Squares: {paperSquares}</p>
-      <p>Paper Square Price: ${costPerSquarePurchase} for {squaresPerPurchase} squares</p>
-      <button onClick={produceStraw}>Produce Straw</button>
-      <button onClick={increasePrice}>Increase Price</button>
-      <button onClick={decreasePrice}>Decrease Price</button>
-      <button onClick={purchaseSquares}>Purchase More Squares</button>
+      <div className="window">
+        <div className="window-titlebar">Turtle Saver Inc.</div>
+        <p>Straws Produced: {strawsProduced}</p>
+      </div>
+
+      <div className="window">
+        <div className="window-titlebar">Business</div>
+        <p>Straws in Inventory: {strawsInInventory}</p>
+        <p>Money: ${money.toFixed(2)}</p>
+        <p>Straw Price: ${strawPrice.toFixed(2)}</p>
+        <p>Paper Squares: {paperSquares}</p>
+        <p>Paper Square Price: ${costPerSquarePurchase} for {squaresPerPurchase} squares</p>
+        <button onClick={produceStraw}>Produce Straw</button>
+        <button onClick={increasePrice}>Increase Price</button>
+        <button onClick={decreasePrice}>Decrease Price</button>
+        <button onClick={purchaseSquares}>Purchase More Squares</button>
+      </div>
 
       <div className="window">
         <div className="window-titlebar">Workforce</div>
