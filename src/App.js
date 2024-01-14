@@ -138,15 +138,27 @@ function App() {
   return (
     <div className="App">
       <div className="window">
-        <div className="window-titlebar">Turtle Saver Inc.</div>
+        <div className="window-titlebar">
+          <div className="titlebar-title">Turtle Saver Inc.</div>
+          <div className="titlebar-buttons">
+            <span className="titlebar-button minimize-button"></span>
+            <span className="titlebar-button maximize-button"></span>
+            <span className="titlebar-button exit-button"></span>
+          </div>
+        </div>
         <p>Straws Produced: {strawsProduced}</p>
         <button onClick={produceStraw}>Produce Straw</button>
       </div>
 
       <div className="window">
-      <div className="window-titlebar">
-        <div className="titlebar-title">Business</div>
-      </div>
+        <div className="window-titlebar">
+          <div className="titlebar-title">Business</div>
+          <div className="titlebar-buttons">
+            <span className="titlebar-button minimize-button"></span>
+            <span className="titlebar-button maximize-button"></span>
+            <span className="titlebar-button exit-button"></span>
+          </div>
+        </div>
         <p>Straws in Inventory: {strawsInInventory}</p>
         <p>Money: ${money.toFixed(2)}</p>
         <p>Straw Price: ${strawPrice.toFixed(2)}</p>
@@ -158,7 +170,14 @@ function App() {
       </div>
 
       <div className="window">
-        <div className="window-titlebar">Workforce</div>
+        <div className="window-titlebar">
+          <div className="titlebar-title">Turtle Saver Inc.</div>
+          <div className="titlebar-buttons">
+            <span className="titlebar-button minimize-button"></span>
+            <span className="titlebar-button maximize-button"></span>
+            <span className="titlebar-button exit-button"></span>
+          </div>
+        </div>
         <Workforce
           money={money}
           updateMoney={updateMoney}

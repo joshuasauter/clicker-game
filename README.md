@@ -13,4 +13,6 @@ A clicker game inspired by universal paperclips...
 - Create the 'news' section
 - Create an 'investments' section
 - Create a 'Public service' where you can invest in public service projects
+- Move code from app.js to components
+- Add more variability to each window
 
