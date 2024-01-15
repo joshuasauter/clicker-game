@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Workforce from './components/Workforce';
+import Upgrades from './components/Upgrades';
 import './App.css';
 
 
@@ -19,12 +20,36 @@ function App() {
   const [costPerSquarePurchase, setCostPerSquarePurchase] = useState(20);
   const [sellIntervalId, setSellIntervalId] = useState(null);
   const [autoStrawsPerSecond, setAutoStrawsPerSecond] = useState(0)
+  const [hasComputer, setHasComputer] = useState(false);
 
   const inventoryRef = useRef(strawsInInventory);
 
   useEffect(() => {
     inventoryRef.current = strawsInInventory;
   }, [strawsInInventory]);
+
+  // Function to purchase an upgrade
+  const purchaseUpgrade = (cost, upgradeType) => {
+    if (money >= cost) {
+      setMoney(money - cost);
+
+      switch (upgradeType) {
+        case 'Computer':
+          setHasComputer(true);
+          break;
+        case 'Marketing':
+          setBonuses(bonuses + 0.5);
+          break;
+        case 'SquaresContract':
+          setSquaresPerPurchase(squaresPerPurchase * 2);
+          break;
+        default:
+          break;
+      }
+    } else {
+      console.log('Not enough money!');
+    }
+  };
 
   const produceStraw = () => {
     if (paperSquares > 0) {
@@ -171,7 +196,7 @@ function App() {
 
       <div className="window">
         <div className="window-titlebar">
-          <div className="titlebar-title">Turtle Saver Inc.</div>
+          <div className="titlebar-title">Work Force</div>
           <div className="titlebar-buttons">
             <span className="titlebar-button minimize-button"></span>
             <span className="titlebar-button maximize-button"></span>
@@ -186,6 +211,8 @@ function App() {
           updateMarketingLevels={updateMarketingLevels}
         />
       </div>
+
+      <Upgrades money={money} purchaseUpgrade={purchaseUpgrade} />
       
       <div className="game-variables">
         <h2>Game Stats</h2>
@@ -195,6 +222,7 @@ function App() {
         <p>Current Bonuses: {bonuses}</p>
         <p>Current Marketing Levvel: {marketingLevels}</p>
         <p>Straws Auto-Produced per second: {autoStrawsPerSecond}</p>
+        <p>Computer purchased? {hasComputer}</p>
       </div>
     </div>
   );    

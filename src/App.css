@@ -125,6 +125,34 @@ body {
   align-items: center;
 }
 
+.upgrade-item {
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.upgrade-item h3 {
+  margin-top: 0;
+}
+
+.upgrade-item button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.upgrade-item button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
 
 
 
