@@ -7,7 +7,7 @@ import './App.css';
 function App() {
   const [strawsProduced, setStrawsProduced] = useState(0);
   const [strawsInInventory, setStrawsInInventory] = useState(0);
-  const [money, setMoney] = useState(200);
+  const [money, setMoney] = useState(2000);
   const [isSelling, setIsSelling] = useState(false);
   const [strawPrice, setStrawPrice] = useState(0.10); // Initial straw price
   const [marketingLevels, setMarketingLevels] = useState(1); // M in the formula
@@ -162,7 +162,7 @@ function App() {
   
   return (
     <div className="App">
-      <div className="window">
+      <div className="window window-main">
         <div className="window-titlebar">
           <div className="titlebar-title">Turtle Saver Inc.</div>
           <div className="titlebar-buttons">
@@ -175,7 +175,7 @@ function App() {
         <button onClick={produceStraw}>Produce Straw</button>
       </div>
 
-      <div className="window">
+      <div className="window window-business">
         <div className="window-titlebar">
           <div className="titlebar-title">Business</div>
           <div className="titlebar-buttons">
@@ -194,7 +194,7 @@ function App() {
         <button onClick={purchaseSquares}>Purchase More Squares</button>
       </div>
 
-      <div className="window">
+      <div className="window window-workforce">
         <div className="window-titlebar">
           <div className="titlebar-title">Work Force</div>
           <div className="titlebar-buttons">

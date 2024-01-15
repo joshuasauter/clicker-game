@@ -42,13 +42,19 @@ body {
   background-size: cover; /* This makes the image cover the entire background */
   background-position: center; /* This centers the image in the background */
   background-repeat: no-repeat; /* This stops the image from repeating */
+  background-size: cover; /* Cover the entire area */
+  background-attachment: fixed; 
 }
 
 
 .game-variables {
+  font-size: x-small;
   margin-top: 20px;
   border-top: 1px solid #ccc;
   padding-top: 10px;
+  left: 600px;
+  top: 400px;
+  position: absolute;
 }
 
 .titlebar-title {
@@ -102,7 +108,8 @@ body {
   padding: 20px;
   margin: 10px;
   width: 300px; /* or any size that fits your design */
-  position: relative; /* To contain the absolute positioned title bar */
+  position: absolute; /* To contain the absolute positioned title bar */
+  
 }
 
 .window-titlebar {
@@ -150,6 +157,26 @@ body {
 .upgrade-item button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.window-workforce {
+  top: 325px;
+  left: 0px;
+}
+
+.window-upgrades {
+  top: 50px;
+  left: 1050px;
+}
+
+.window-business {
+  top: 25px;
+  left: 0px;
+}
+
+.window-main {
+  top: 250px;
+  left: 550px;
 }
 
 

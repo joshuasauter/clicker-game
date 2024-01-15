@@ -8,7 +8,7 @@ function Upgrades({ money, purchaseUpgrade }) {
   ];
 
   return (
-    <div className="window">
+    <div className="window window-upgrades">
       <div className="window-titlebar">Upgrades</div>
       {upgrades.map((upgrade) => (
         <div key={upgrade.id} className="upgrade-item">
