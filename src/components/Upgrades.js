@@ -9,7 +9,13 @@ function Upgrades({ money, purchaseUpgrade }) {
 
   return (
     <div className="window window-upgrades">
-      <div className="window-titlebar">Upgrades</div>
+      <div className="window-titlebar">Upgrades
+        <div className="titlebar-buttons">
+            <span className="titlebar-button minimize-button"></span>
+            <span className="titlebar-button maximize-button"></span>
+            <span className="titlebar-button exit-button"></span>
+        </div>
+      </div>
       {upgrades.map((upgrade) => (
         <div key={upgrade.id} className="upgrade-item">
           <h3>{upgrade.title}</h3>
