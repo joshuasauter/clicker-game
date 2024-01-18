@@ -1,6 +1,6 @@
 # Description
 
-A clicker game inspired by universal paperclips...
+A clicker game inspired by universal paperclips... but with paper straws. 
 
 # Todo list
 
@@ -15,4 +15,12 @@ A clicker game inspired by universal paperclips...
 - Create a 'Public service' where you can invest in public service projects
 - Move code from app.js to components
 - Add more variability to each window
+
+# Possible Levels
+
+- First level: building to trillion dollars
+- Second level: Type 1 civ
+- Third level: Type 2 civ
+- Fourth level: Type 3 civ
+- Fifth level: Universal
 
