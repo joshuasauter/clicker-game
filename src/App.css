@@ -57,6 +57,17 @@ body {
   position: absolute;
 }
 
+.gif-window {
+  width: 100px; /* Adjust width as needed */
+  height: 100px; /* Adjust height as needed */
+  left: 1050px;
+}
+
+.gif-window img {
+  width: 100%;
+  height: auto;
+}
+
 .titlebar-title {
   /* Styles for the title text */
 }
@@ -107,7 +118,7 @@ body {
   border-radius: 4px;
   padding: 20px;
   margin: 10px;
-  width: 300px; /* or any size that fits your design */
+  /* or any size that fits your design */
   position: absolute; /* To contain the absolute positioned title bar */
   
 }
@@ -162,21 +173,25 @@ body {
 .window-workforce {
   top: 325px;
   left: 0px;
+  width: 300px;
 }
 
 .window-upgrades {
-  top: 50px;
+  top: 150px;
   left: 1050px;
+  width: 300px;
 }
 
 .window-business {
   top: 25px;
   left: 0px;
+  width: 300px;
 }
 
 .window-main {
   top: 250px;
   left: 550px;
+  width: 300px;
 }
 
 

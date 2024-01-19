@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Workforce from './components/Workforce';
 import Upgrades from './components/Upgrades';
+import GifWindow from './components/GifWindow';
 import './App.css';
 
 
@@ -213,6 +214,8 @@ function App() {
       </div>
 
       <Upgrades money={money} purchaseUpgrade={purchaseUpgrade} />
+
+      <GifWindow />
       
       <div className="game-variables">
         <h2>Game Stats</h2>
